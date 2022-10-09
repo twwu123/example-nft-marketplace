@@ -1,9 +1,12 @@
-import useYoroi from "./hooks/useYoroi";
-import useWasm from "./hooks/useWasm";
-import { bytesToHex, hexToBytes } from './utils/utils';
-import { useState } from "react";
+import useYoroi from "./hooks/useYoroi"
+import useWasm from "./hooks/useWasm"
+import { bytesToHex, hexToBytes } from './utils/utils'
+import { useState } from "react"
+import Home from "./pages/home/Home"
+import Navbar from "./pages/home/components/Navbar"
 
 function App() {
+  const [darkMode, setDarkMode] = useState(true)
   const [offers, setOffers] = useState([])
   const { api, connect } = useYoroi()
   const wasm = useWasm()
@@ -278,32 +281,12 @@ function App() {
   }
 
   return (
-
-    <div className="App">
-      <div className="grid justify-items-center">
-        <div>
-          {api ?
-            <h5>Connected</h5>
-            :
-            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-              onClick={() => connect(true, false)}>Request Access To Yoroi</button>
-          }
-        </div>
-        <div>
-          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={testScriptAddress}>Console log script address</button>
-        </div>
-        <div>
-          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={testSend}>Test Send</button>
-        </div>
-        <div>
-          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={testRedeem}>Test Redeem</button>
-        </div>
+    <div className={darkMode ? "dark" : ""}>
+      <div className="min-h-screen bg-white dark:bg-gray-800">
+        <Navbar props={{ darkMode: darkMode, setDarkMode: setDarkMode }} />
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

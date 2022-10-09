@@ -8,7 +8,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <YoroiProvider>
     <React.StrictMode>
-      <App />
+        <App />
     </React.StrictMode>
   </YoroiProvider>
 );
