@@ -1,8 +1,10 @@
-import NavBar from "./components/Navbar"
+import HomeCarousel from "./components/HomeCarousel"
 
 const Home = () => {
     return (
-        <NavBar />
+        <>
+            <HomeCarousel />
+        </>
     )
 }
 

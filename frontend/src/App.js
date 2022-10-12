@@ -1,12 +1,28 @@
 import useYoroi from "./hooks/useYoroi"
 import useWasm from "./hooks/useWasm"
 import { bytesToHex, hexToBytes } from './utils/utils'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Home from "./pages/home/Home"
+import Mint from "./pages/mint/Mint"
 import Navbar from "./pages/home/components/Navbar"
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(true)
+  const [theme, setTheme] = useState("dark")
+
+  useEffect(() => {
+    if (!localStorage.getItem("theme")) {
+      localStorage.setItem("theme", "dark")
+    } else {
+      setTheme(localStorage.getItem("theme"))
+    }
+  }, [])
+
   const [offers, setOffers] = useState([])
   const { api, connect } = useYoroi()
   const wasm = useWasm()
@@ -281,9 +297,15 @@ function App() {
   }
 
   return (
-    <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-white dark:bg-gray-800">
-        <Navbar props={{ darkMode: darkMode, setDarkMode: setDarkMode }} />
+    <div className={theme}>
+      <div className="min-h-screen bg-neutral-200 dark:bg-gray-800">
+        <Navbar props={{ theme: theme, setTheme: setTheme }} />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/mint" element={<Mint />} />
+          </Routes>
+        </Router>
       </div>
     </div>
   )
