@@ -41,7 +41,7 @@ const Navbar = ({ props }) => {
                         </div>
                         :
                         <button type="button" className="focus:outline-none text-white text-bold bg-blue-500 hover:bg-blue-600 dark:text-black dark:bg-yellow-400 dark:hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900 my-2"
-                            onClick={() => { connect(true, false) }}>Mint NFT</button>
+                            onClick={() => { connect(true, false) }}>Connect Wallet</button>
                     }
                 </div>
             </div>
