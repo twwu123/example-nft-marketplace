@@ -36,7 +36,7 @@ const Navbar = ({ props }) => {
                     </button>
                     {api ?
                         <div>
-                            <a href="/" type="button" className="focus:outline-none text-white text-bold bg-blue-500 hover:bg-blue-600 dark:text-black dark:bg-yellow-400 dark:hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900 my-2">Sell NFT</a>
+                            <a href="/sell" type="button" className="focus:outline-none text-white text-bold bg-blue-500 hover:bg-blue-600 dark:text-black dark:bg-yellow-400 dark:hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900 my-2">Sell NFT</a>
                             <a href="/mint" type="button" className="focus:outline-none text-white text-bold bg-blue-500 hover:bg-blue-600 dark:text-black dark:bg-yellow-400 dark:hover:bg-yellow-500 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:focus:ring-yellow-900 my-2">Mint NFT</a>
                         </div>
                         :

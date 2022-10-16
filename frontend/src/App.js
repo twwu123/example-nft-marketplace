@@ -1,9 +1,11 @@
+import { Toast } from "flowbite-react"
 import useYoroi from "./hooks/useYoroi"
 import useWasm from "./hooks/useWasm"
 import { bytesToHex, hexToBytes } from './utils/utils'
 import { useEffect, useState } from "react"
 import Home from "./pages/home/Home"
 import Mint from "./pages/mint/Mint"
+import Sell from "./pages/sell/Sell"
 import Navbar from "./pages/home/components/Navbar"
 import {
   BrowserRouter as Router,
@@ -300,12 +302,15 @@ function App() {
     <div className={theme}>
       <div className="min-h-screen bg-neutral-200 dark:bg-gray-800">
         <Navbar props={{ theme: theme, setTheme: setTheme }} />
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/mint" element={<Mint />} />
-          </Routes>
-        </Router>
+        <div className="px-10">
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/mint" element={<Mint />} />
+              <Route path="/sell" element={<Sell />} />
+            </Routes>
+          </Router>
+        </div>
       </div>
     </div>
   )
