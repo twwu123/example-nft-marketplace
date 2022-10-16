@@ -1,7 +1,6 @@
 import { useState } from "react"
 import axios from "axios";
 import { Card, Label, TextInput, Button } from "flowbite-react"
-import { bytesToHex, hexToBytes } from '../../../utils/utils'
 import { Buffer } from "buffer";
 import useWasm from "../../../hooks/useWasm"
 import useYoroi from "../../../hooks/useYoroi"
@@ -9,6 +8,7 @@ import useYoroi from "../../../hooks/useYoroi"
 const MintFormCard = () => {
 	const [tokenName, setTokenName] = useState("")
 	const [tokenImageURL, setTokenImageURL] = useState("")
+	const [tokenDescription, setTokenDescription] = useState("")
 
 	const { api } = useYoroi()
 	const wasm = useWasm()
@@ -93,7 +93,8 @@ const MintFormCard = () => {
 			[policyScript.hash(0).to_hex()]: {
 				[tokenName]: {
 					"name": tokenName,
-					"image": tokenImageURL
+					"image": tokenImageURL,
+					"description": tokenDescription
 				}
 			}
 		}
@@ -153,6 +154,21 @@ const MintFormCard = () => {
 						required={true}
 						value={tokenImageURL}
 						onChange={(e) => { setTokenImageURL(e.target.value) }}
+					/>
+				</div>
+				<div>
+					<div className="mb-2 block">
+						<Label
+							htmlFor="tokenDescription"
+							value="Token Description"
+						/>
+					</div>
+					<TextInput
+						id="tokenDescription"
+						type="text"
+						required={true}
+						value={tokenDescription}
+						onChange={(e) => { setTokenDescription(e.target.value) }}
 					/>
 				</div>
 				<Button type="submit">
