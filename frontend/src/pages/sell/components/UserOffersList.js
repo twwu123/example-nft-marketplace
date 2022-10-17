@@ -165,7 +165,7 @@ const UserOfferCard = ({ offer, index }) => {
                         const strOffers = localStorage.getItem("offers")
                         const offers = JSON.parse(strOffers)
                         offers.splice(index, 1)
-                        localStorage.setItem("offers", offers)
+                        localStorage.setItem("offers", JSON.stringify(offers))
 
                         toast('success', `Transaction successfully submitted`)
                         console.log(`Transaction successfully submitted: ${txId}`)

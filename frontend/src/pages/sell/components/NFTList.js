@@ -21,6 +21,11 @@ const NFTList = () => {
             const wasmBalance = wasm.Value.from_hex(hexBalance)
             const balanceJSON = wasmBalance.to_json()
             const balanceObject = JSON.parse(balanceJSON)
+            if (!balanceObject["multiasset"]) {
+                setNFTList([])
+                setMetadatum([])
+                return
+            }
             const currentNFTList = []
             const policyIds = Object.keys(balanceObject["multiasset"])
             for (let i = 0; i < policyIds.length; i++) {
@@ -63,6 +68,7 @@ const NFTList = () => {
         }
         getMetadatum()
     }, [NFTList])
+
 
 
     return (
