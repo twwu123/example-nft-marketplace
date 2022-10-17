@@ -178,7 +178,6 @@ const UserOfferCard = ({ offer, index }) => {
                 toast('error', err.info)
                 console.log(err.info)
             })
-
     }
 
     return (
