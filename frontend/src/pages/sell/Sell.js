@@ -1,8 +1,12 @@
 import NFTList from "./components/NFTList"
+import UserOffersList from "./components/UserOffersList"
 
 const Sell = () => {
     return (
-        <NFTList />
+        <div>
+            <NFTList />
+            <UserOffersList />
+        </div>
     )
 }
 
