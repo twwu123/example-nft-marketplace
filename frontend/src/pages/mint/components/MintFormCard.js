@@ -116,7 +116,7 @@ const MintFormCard = () => {
 				const wasmSignedTransaction = wasm.Transaction.new(wasmTransaction.body(), wasmWitnessSet, wasmTransaction.auxiliary_data())
 				api?.submitTx(wasmSignedTransaction.to_hex())
 					.then((txId) => {
-						toast('success', "Tx successfully submitted: " + txId)
+						toast('success', "Tx successfully submitted")
 						console.log("Tx successfully submitted ", txId)
 					})
 					.catch((e) => {

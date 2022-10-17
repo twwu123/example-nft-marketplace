@@ -86,12 +86,12 @@ const NFTList = () => {
                         })
                         :
                         <div>
-                            <p className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">No NFTs found</p>
+                            <p className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white pb-10">No NFTs found</p>
                         </div>
                     :
                     <div>
                         <Spinner />
-                        <p className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Loading your NFTs</p>
+                        <p className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white pb-10">Loading your NFTs</p>
                     </div>
                 }
             </div>
