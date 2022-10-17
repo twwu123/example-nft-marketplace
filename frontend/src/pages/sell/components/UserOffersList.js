@@ -20,6 +20,7 @@ const UserOffersList = () => {
             for (let i = 0; i < offers.length; i++) {
                 const wasmUserAddress = wasm.Address.from_hex(hexUserAddress[0])
                 if (offers[i]["seller"] === wasmUserAddress.to_bech32()) {
+                    offers[i]["index"] = i
                     currentUserOffers.push(offers[i])
                 }
             }
@@ -35,7 +36,7 @@ const UserOffersList = () => {
                 {
                     userOffers.map((val, idx) => {
                         return (
-                            <UserOfferCard offer={val} index={idx} key={idx} />
+                            <UserOfferCard offer={val} index={val["index"]} key={idx} />
                         )
                     })
                 }
