@@ -1,4 +1,3 @@
-import { Toast } from "flowbite-react"
 import useYoroi from "./hooks/useYoroi"
 import useWasm from "./hooks/useWasm"
 import { bytesToHex, hexToBytes } from './utils/utils'
@@ -6,13 +5,13 @@ import { useEffect, useState } from "react"
 import Home from "./pages/home/Home"
 import Mint from "./pages/mint/Mint"
 import Sell from "./pages/sell/Sell"
-import Navbar from "./pages/home/components/Navbar"
+import Navbar from "./common/navbar/Navbar"
 import {
   BrowserRouter as Router,
   Routes,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
+import ToastContainer from "./common/toast/ToastContainer"
 
 function App() {
   const [theme, setTheme] = useState("dark")
@@ -137,7 +136,6 @@ function App() {
   }
 
   const testRedeem = async () => {
-    console.log(offers[0])
     const txBuilder = wasm?.TransactionBuilder.new(
       wasm.TransactionBuilderConfigBuilder.new()
         .fee_algo(
@@ -239,9 +237,7 @@ function App() {
     const wasmRedeemers = wasm.Redeemers.new()
     wasmRedeemers.add(txBuilder.get_plutus_input_scripts().get(0).redeemer())
     // The cost models of v2 scripts must be manually built currently
-    const cost_model_vals = [205665, 812, 1, 1, 1000, 571, 0, 1, 1000, 24177, 4, 1, 1000, 32, 117366, 10475, 4, 23000, 100, 23000, 100, 23000, 100, 23000, 100, 23000, 100, 23000, 100, 100, 100, 23000, 100, 19537, 32, 175354, 32, 46417, 4, 221973, 511, 0, 1, 89141, 32, 497525, 14068, 4, 2, 196500, 453240, 220, 0, 1, 1, 1000, 28662, 4, 2, 245000, 216773, 62, 1, 1060367, 12586, 1, 208512, 421, 1, 187000, 1000, 52998, 1, 80436, 32, 43249, 32, 1000, 32, 80556, 1, 57667, 4, 1000, 10, 197145, 156, 1, 197145, 156, 1, 204924, 473, 1, 208896, 511, 1, 52467, 32, 64832, 32, 65493, 32, 22558, 32, 16563, 32, 76511, 32, 196500, 453240, 220, 0, 1, 1, 69522, 11687, 0, 1, 60091, 32, 196500, 453240, 220, 0, 1, 1, 196500, 453240, 220, 0, 1, 1, 1159724, 392670, 0, 2, 806990, 30482, 4, 1927926, 82523, 4, 265318, 0, 4, 0, 85931, 32, 205665, 812, 1, 1, 41182, 32, 212342, 32, 31220, 32, 32696, 32, 43357, 32, 32247, 32, 38314, 32, 20000000000, 20000000000, 9462713, 1021, 10, 20000000000, 0, 20000000000]
-    const costModel = wasm.CostModel.new();
-    cost_model_vals.forEach((x, i) => costModel.set(i, wasm.Int.new(wasm.BigNum.from_str(String(x)))));
+    const costModel = wasm.TxBuilderConstants.plutus_vasil_cost_models().get(wasm.Language.new_plutus_v2());
     const costmdls = wasm.Costmdls.new()
     costmdls.insert(wasm.Language.new_plutus_v2(), costModel)
     // I intentionally put an undefined where the datum should go to make it clearer, but the argument can simply be left empty
@@ -311,6 +307,7 @@ function App() {
             </Routes>
           </Router>
         </div>
+        <ToastContainer />
       </div>
     </div>
   )
