@@ -1,21 +1,25 @@
 import { useState } from "react"
 import axios from "axios";
-import { Card, Label, TextInput, Button } from "flowbite-react"
+import { Card, Label, TextInput, Button, Spinner } from "flowbite-react"
 import { Buffer } from "buffer";
 import useWasm from "../../../hooks/useWasm"
 import useYoroi from "../../../hooks/useYoroi"
+import { useToast } from "../../../hooks/useToast";
 
 const MintFormCard = () => {
 	const [tokenName, setTokenName] = useState("")
 	const [tokenImageURL, setTokenImageURL] = useState("")
 	const [tokenDescription, setTokenDescription] = useState("")
+	const [loading, setLoading] = useState(false)
 
 	const { api } = useYoroi()
 	const wasm = useWasm()
+	const toast = useToast(4000);
 	const yoroiBackendUrl = "https://testnet-backend.yoroiwallet.com/api"
 
 	const mintToken = async (event) => {
 		event.preventDefault()
+		setLoading(true)
 		const txBuilder = wasm?.TransactionBuilder.new(
 			wasm.TransactionBuilderConfigBuilder.new()
 				.fee_algo(
@@ -105,77 +109,88 @@ const MintFormCard = () => {
 		txBuilder.add_change_if_needed(wasmChangeAddress)
 		const wasmTransaction = txBuilder.build_tx()
 
+		setLoading(false)
 		api?.signTx(wasmTransaction.to_hex())
 			.then((hexWitnessSet) => {
 				const wasmWitnessSet = wasm.TransactionWitnessSet.from_hex(hexWitnessSet)
 				const wasmSignedTransaction = wasm.Transaction.new(wasmTransaction.body(), wasmWitnessSet, wasmTransaction.auxiliary_data())
 				api?.submitTx(wasmSignedTransaction.to_hex())
 					.then((txId) => {
+						toast('success', "Tx successfully submitted: " + txId)
 						console.log("Tx successfully submitted ", txId)
 					})
 					.catch((e) => {
+						toast('error', 'Transaction was rejected');
 						console.log(e)
 					})
 			})
 			.catch((e) => {
+				toast('error', e.info);
 				console.log(e)
 			})
 	}
 
 	return (
-		<Card>
-			<form className="flex flex-col gap-4"
-				onSubmit={mintToken}>
-				<div>
-					<div className="mb-2 block">
-						<Label
-							htmlFor="tokenName"
-							value="Token Name"
+		<>
+			<Card>
+				<form className="flex flex-col gap-4"
+					onSubmit={mintToken}>
+					<div>
+						<div className="mb-2 block">
+							<Label
+								htmlFor="tokenName"
+								value="Token Name"
+							/>
+						</div>
+						<TextInput
+							id="tokenName"
+							type="text"
+							required={true}
+							value={tokenName}
+							onChange={(e) => { setTokenName(e.target.value) }}
 						/>
 					</div>
-					<TextInput
-						id="tokenName"
-						type="text"
-						required={true}
-						value={tokenName}
-						onChange={(e) => { setTokenName(e.target.value) }}
-					/>
-				</div>
-				<div>
-					<div className="mb-2 block">
-						<Label
-							htmlFor="tokenImage"
-							value="Token Image URL"
+					<div>
+						<div className="mb-2 block">
+							<Label
+								htmlFor="tokenImage"
+								value="Token Image URL"
+							/>
+						</div>
+						<TextInput
+							id="tokenImage"
+							type="text"
+							required={true}
+							value={tokenImageURL}
+							onChange={(e) => { setTokenImageURL(e.target.value) }}
 						/>
 					</div>
-					<TextInput
-						id="tokenImage"
-						type="text"
-						required={true}
-						value={tokenImageURL}
-						onChange={(e) => { setTokenImageURL(e.target.value) }}
-					/>
-				</div>
-				<div>
-					<div className="mb-2 block">
-						<Label
-							htmlFor="tokenDescription"
-							value="Token Description"
+					<div>
+						<div className="mb-2 block">
+							<Label
+								htmlFor="tokenDescription"
+								value="Token Description"
+							/>
+						</div>
+						<TextInput
+							id="tokenDescription"
+							type="text"
+							required={true}
+							value={tokenDescription}
+							onChange={(e) => { setTokenDescription(e.target.value) }}
 						/>
 					</div>
-					<TextInput
-						id="tokenDescription"
-						type="text"
-						required={true}
-						value={tokenDescription}
-						onChange={(e) => { setTokenDescription(e.target.value) }}
-					/>
+					<Button type="submit">
+						Submit
+					</Button>
+				</form>
+			</Card>
+			{ loading && 
+				<div className="float-right pt-5">
+					<Spinner />
 				</div>
-				<Button type="submit">
-					Submit
-				</Button>
-			</form>
-		</Card>
+			}
+		</>
 	)
 }
 
