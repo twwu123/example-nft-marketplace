@@ -1,4 +1,4 @@
-import useYoroi from "../../../hooks/useYoroi"
+import useYoroi from "../../hooks/useYoroi"
 
 const Navbar = ({ props }) => {
     const { api, connect } = useYoroi()
