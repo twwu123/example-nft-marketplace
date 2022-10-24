@@ -1,6 +1,3 @@
-import useYoroi from "./hooks/useYoroi"
-import useWasm from "./hooks/useWasm"
-import { bytesToHex, hexToBytes } from './utils/utils'
 import { useEffect, useState } from "react"
 import Home from "./pages/home/Home"
 import Mint from "./pages/mint/Mint"
@@ -37,8 +34,8 @@ function App() {
             </Routes>
           </Router>
         </div>
-        <ToastContainer />
       </div>
+      <ToastContainer />
     </div>
   )
 }
