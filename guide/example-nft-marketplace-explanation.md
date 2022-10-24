@@ -2,13 +2,13 @@
 
 It may be somewhat useful as an addition to the code base to highlight some of the more important bits of code, and also to describe a typical work flow to build a dapp.
 
-1. Write a Plutus Script (Plutus is a subset of Haskell)
-2. Compile the Plutus Script into bytecode
-3. Hash the bytecode into an address
-4. Send some ADA/Tokens to this address with a corresponding Datum
-5. Redeem the ADA/Tokens based on some logic, with a corresponding redeemer
+1. [Write a Plutus Script (Plutus is a subset of Haskell)](#1-write-a-plutus-script)
+2. [Compile the Plutus Script into bytecode](#2-compile-the-plutus-script-into-bytecode)
+3. [Hash the bytecode into an address](#3-hash-the-bytecode-into-an-address)
+4. [Send some ADA/Tokens to this address with a corresponding Datum](#4-send-some-adatokens-to-this-address-with-a-corresponding-datum)
+5. [Redeem the ADA/Tokens based on some logic, with a corresponding redeemer](#5-redeem-the-adatokens-based-on-some-logic-with-a-corresponding-redeemer)
 
-## Write a Plutus Script
+## 1. Write a Plutus Script
 
 ```haskell
 data Offer = Offer 
@@ -98,7 +98,7 @@ However, if the user's intention was to cancel, we only need to check that the s
 
 The rest of the code shouldn't be too hard to follow with a basic understanding of Haskell.
 
-## Compile the Plutus Script into bytecode
+## 2. Compile the Plutus Script into bytecode
 
 ```haskell
 validator :: Validator
@@ -246,7 +246,7 @@ This snippet of code asynchronously imports `cardano-serialization-lib`, and han
 
 The other hook, `useYoroi` is needed to interact with the extension wallet `Yoroi`, but should be fairly self explanatory.
 
-## Hash the bytecode into an address
+## 3. Hash the bytecode into an address
 
 We can then hash the bytecode into a corresponding Cardano address
 
@@ -266,7 +266,7 @@ addr_test1wq0acvhyvhxgcq7kp6gpcv6m44v7cvrp4uyv8lw9ttju35gqk8egf
 
 We can log it as a `bech32` address if we wish, and simply use this `bech32` address from here on.
 
-## Send some ADA/Tokens to this address with a corresponding Datum
+## 4. Send some ADA/Tokens to this address with a corresponding Datum
 
 ```javascript
 const sellToken = async () => {
@@ -428,7 +428,7 @@ data Offer = Offer
 PlutusTx.makeIsDataIndexed ''Offer [('Offer, 0)]
 ```
 
-## Redeem the ADA/Tokens based on some logic, with a corresponding redeemer
+## 5. Redeem the ADA/Tokens based on some logic, with a corresponding redeemer
 
 There are two operations available in our contract, and the contract logic depends entirely on which `redeemer` is provided.
 
