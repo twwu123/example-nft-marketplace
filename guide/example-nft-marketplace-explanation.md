@@ -10,6 +10,8 @@ It may be somewhat useful as an addition to the code base to highlight some of t
 
 ## 1. Write a Plutus Script
 
+All the script code can be found in the `swap` folder
+
 ```haskell
 data Offer = Offer 
     { price           :: !Integer
