@@ -12,6 +12,8 @@ It may be somewhat useful as an addition to the code base to highlight some of t
 
 All the script code can be found in the `swap` folder
 
+[Script Code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/swap/src/Swap.hs#L76)
+
 ```haskell
 data Offer = Offer 
     { price           :: !Integer
@@ -101,6 +103,8 @@ However, if the user's intention was to cancel, we only need to check that the s
 The rest of the code shouldn't be too hard to follow with a basic understanding of Haskell.
 
 ## 2. Compile the Plutus Script into bytecode
+
+[Compile code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/swap/src/Swap.hs#L102)
 
 ```haskell
 validator :: Validator
@@ -226,6 +230,8 @@ and change the scripts in `package.json` to use `craco`
 
 Finally we need to set up some hooks, since wasm libraries cannot be imported synchronously. You should be able to find example of the hooks I'm talking about in the `frontend/src/hooks` folder.
 
+[Wasm hook code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/hooks/useWasm.js#L3)
+
 ```javascript
 const useWasm = () => {
     const [CardanoWasm, setCardanoWasm] = useState(null)
@@ -248,6 +254,8 @@ This snippet of code asynchronously imports `cardano-serialization-lib`, and han
 
 The other hook, `useYoroi` is needed to interact with the extension wallet `Yoroi`, but should be fairly self explanatory.
 
+[Yoroi hook code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/hooks/useYoroi.js#L31)
+
 ## 3. Hash the bytecode into an address
 
 We can then hash the bytecode into a corresponding Cardano address
@@ -269,6 +277,8 @@ addr_test1wq0acvhyvhxgcq7kp6gpcv6m44v7cvrp4uyv8lw9ttju35gqk8egf
 We can log it as a `bech32` address if we wish, and simply use this `bech32` address from here on.
 
 ## 4. Send some ADA/Tokens to this address with a corresponding Datum
+
+[Sell token code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/pages/sell/components/SellNFTCard.js#L34)
 
 ```javascript
 const sellToken = async () => {
@@ -434,6 +444,8 @@ PlutusTx.makeIsDataIndexed ''Offer [('Offer, 0)]
 
 There are two operations available in our contract, and the contract logic depends entirely on which `redeemer` is provided.
 
+[Cancel offer code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/pages/sell/components/CancelUserOfferCard.js#L11)
+
 ```javascript
 const cancelOffer = async () => {
         const txBuilder = wasm?.TransactionBuilder.new(
@@ -565,6 +577,8 @@ const cancelOffer = async () => {
             })
     }
 ```
+
+[Buy offer code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/pages/home/components/BuyPublicOfferCard.js#L11)
 
 ```javascript
 const buyOffer = async () => {
