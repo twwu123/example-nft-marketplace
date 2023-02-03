@@ -252,9 +252,9 @@ const useWasm = () => {
 
 This snippet of code asynchronously imports `cardano-serialization-lib`, and handles everything for us, so we can simply use the library by calling this hook.
 
-The other hook, `useYoroi` is needed to interact with the extension wallet `Yoroi`, but should be fairly self explanatory.
+The other hook, `useNami` is needed to interact with the extension wallet `Nami`, but should be fairly self explanatory.
 
-[Yoroi hook code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/hooks/useYoroi.js#L31)
+[Nami hook code](https://github.com/twwu123/example-nft-marketplace/blob/764f29c4c9147b23abea20141cfe1636ebb516d0/frontend/src/hooks/useNami.js#L31)
 
 ## 3. Hash the bytecode into an address
 
@@ -738,7 +738,7 @@ You can see that the code snippets of both `redeem` transactions are almost iden
 
 ### Cancel Logic
 
-In the cancel transaction we require an extra line that adds a required signer, which corresponds to the seller's address. Without this, the script would fail. Also the Yoroi API automatically attempts to detect required signers in the transaction that the wallet controls, and will sign it with the correct private key.
+In the cancel transaction we require an extra line that adds a required signer, which corresponds to the seller's address. Without this, the script would fail. Also the Nami API automatically attempts to detect required signers in the transaction that the wallet controls, and will sign it with the correct private key.
 
 ```javascript
 // We need to add the required signer of our first used address, since the script
