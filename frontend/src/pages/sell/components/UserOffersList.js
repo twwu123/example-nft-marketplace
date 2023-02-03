@@ -1,10 +1,10 @@
 import useWasm from "../../../hooks/useWasm"
-import useYoroi from "../../../hooks/useYoroi"
+import useNami from "../../../hooks/useNami"
 import { useEffect, useState } from "react"
 import UserOfferCard from "./CancelUserOfferCard"
 
 const UserOffersList = () => {
-    const { api } = useYoroi()
+    const { api } = useNami()
     const wasm = useWasm()
 
     const [userOffers, setUserOffers] = useState([])

@@ -1,7 +1,7 @@
-import useYoroi from "../../hooks/useYoroi"
+import useNami from "../../hooks/useNami"
 
 const Navbar = ({ props }) => {
-    const { api, connect } = useYoroi()
+    const { api, connect } = useNami()
     const { theme, setTheme } = props
 
     return (

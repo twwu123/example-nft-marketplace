@@ -1,14 +1,16 @@
 import useWasm from "../../../hooks/useWasm"
-import useYoroi from "../../../hooks/useYoroi"
+import useNami from "../../../hooks/useNami"
 import { useToast } from "../../../hooks/useToast"
 import { Buffer } from "buffer"
+import { hexToBytes, mergeSignatures } from "../../../utils/utils"
 
 const PublicOfferCard = ({ offer, index }) => {
-    const { api } = useYoroi()
+    const { api } = useNami()
     const wasm = useWasm()
     const toast = useToast(4000)
 
     const buyOffer = async () => {
+        console.log(offer)
         const txBuilder = wasm?.TransactionBuilder.new(
             wasm.TransactionBuilderConfigBuilder.new()
                 .fee_algo(
@@ -68,17 +70,22 @@ const PublicOfferCard = ({ offer, index }) => {
 
         // Finally we add the plutus script input to the inputs builder
         wasmTxInputsBuilder.add_plutus_script_input(plutusScriptWitness, wasmOfferTxInput, wasmValue)
-        // We need to be sure that we can pay the seller and fees
-        const hexInputUtxos = await api.getUtxos(String(offer.price + 2000000))
+
+        const hexInputUtxos = await window.cardano.getUtxos()
         for (let i = 0; i < hexInputUtxos.length; i++) {
-            const wasmUtxo = wasm.TransactionUnspentOutput.from_hex(hexInputUtxos[i])
-            wasmTxInputsBuilder.add_input(wasmUtxo.output().address(), wasmUtxo.input(), wasmUtxo.output().amount())
+            const wasmUtxo = wasm.TransactionUnspentOutput.from_bytes(hexToBytes(hexInputUtxos[i]))
+            wasmTxInputsBuilder.add_input(
+                wasmUtxo.output().address(),
+                wasmUtxo.input(),
+                wasmUtxo.output().amount()
+            )
         }
+
         // Then we can set the tx inputs to the tx inputs builder
         txBuilder.set_inputs(wasmTxInputsBuilder)
 
         // For plutus transactions, we need some collateral also
-        const hexCollateralUtxos = await api?.getCollateral(3000000)
+        const hexCollateralUtxos = await window.cardano.getCollateral(3000000)
         const collateralTxInputsBuilder = wasm.TxInputsBuilder.new()
         for (let i = 0; i < hexCollateralUtxos.length; i++) {
             const wasmUtxo = wasm.TransactionUnspentOutput.from_hex(hexCollateralUtxos[i])
@@ -98,10 +105,18 @@ const PublicOfferCard = ({ offer, index }) => {
         const plutusWitnessHash = wasm.hash_script_data(wasmRedeemers, costmdls, undefined)
         txBuilder.set_script_data_hash(plutusWitnessHash)
 
+        // const wasmMarketplaceAddress = wasm.Address.from_bech32('addr_test1vq0smr77axmdr7sh3vsklpkqzq9hevv55tzm46vj4l3nxhqxe0vrc')
+        // const marketplaceAmount = Math.trunc(offer.price * 2.5 / 100);
+        // const wasmMarketplaceOutput = wasm.TransactionOutput.new(
+        //     wasmMarketplaceAddress,
+        //     wasm.Value.new(wasm.BigNum.from_str(String(marketplaceAmount)))
+        // )
+        // txBuilder.add_output(wasmMarketplaceOutput)
+
         const wasmSellerAddress = wasm.Address.from_bech32(offer.seller)
         const wasmOutput = wasm.TransactionOutput.new(
             wasmSellerAddress,
-          wasm.Value.new(wasm.BigNum.from_str(String(offer.price)))
+            wasm.Value.new(wasm.BigNum.from_str(String(offer.price)))
         )
         txBuilder.add_output(wasmOutput)
 
@@ -110,35 +125,39 @@ const PublicOfferCard = ({ offer, index }) => {
         const wasmChangeAddress = wasm.Address.from_hex(hexChangeAddress)
         txBuilder.add_change_if_needed(wasmChangeAddress)
 
-        const unsignedTransactionHex = txBuilder.build_tx().to_hex()
-        api?.signTx(unsignedTransactionHex)
-            .then((witnessSetHex) => {
-                const wasmWitnessSet = wasm.TransactionWitnessSet.from_hex(witnessSetHex)
-                const wasmTx = wasm.Transaction.from_hex(unsignedTransactionHex)
-                const wasmSignedTransaction = wasm.Transaction.new(
-                    wasmTx.body(),
-                    wasmWitnessSet,
-                    wasmTx.auxiliary_data()
-                )
-                const transactionHex = wasmSignedTransaction.to_hex()
-                api.submitTx(transactionHex)
-                    .then(txId => {
-                        const strOffers = localStorage.getItem("offers")
-                        const offers = JSON.parse(strOffers)
-                        offers.splice(index, 1)
-                        localStorage.setItem("offers", JSON.stringify(offers))
+        const unsignedTransaction = txBuilder.build_tx()
+        const deserializedTx = wasm.Transaction.from_bytes(unsignedTransaction.to_bytes())
+        const txWitnessSet = deserializedTx.witness_set();
+        window.cardano.signTx(unsignedTransaction.to_hex(), true).then((newWitnessSet) => {
+            const newSignatures = wasm.TransactionWitnessSet.from_bytes(hexToBytes(newWitnessSet)).vkeys() ?? wasm.Vkeywitnesses.new();
 
-                        toast('success', `Transaction successfully submitted`)
-                        console.log(`Transaction successfully submitted: ${txId}`)
-                    })
-                    .catch(err => {
-                        toast('error', err.info)
-                        console.log(err.info)
-                    })
-            }).catch(err => {
-                toast('error', err.info)
-                console.log(err.info)
-            })
+            const txSignatures = mergeSignatures(wasm, txWitnessSet, newSignatures)
+            txWitnessSet.set_vkeys(txSignatures);
+
+            const signedTx = Buffer.from(wasm.Transaction.new(
+                deserializedTx.body(),
+                txWitnessSet,
+                deserializedTx.auxiliary_data()
+            ).to_bytes()).toString('hex');
+
+            window.cardano.submitTx(signedTx)
+                .then((txId) => {
+                    const strOffers = localStorage.getItem("offers")
+                    const offers = JSON.parse(strOffers)
+                    offers.splice(index, 1)
+                    localStorage.setItem("offers", JSON.stringify(offers))
+
+                    toast('success', `Transaction successfully submitted`)
+                    console.log(`Transaction successfully submitted: ${txId}`)
+                })
+                .catch((e) => {
+                    toast('error', 'Transaction was rejected');
+                    console.log(e)
+                });
+        }).catch((e) => {
+            toast('error', e.info);
+            console.log(e)
+        });
     }
 
     return (

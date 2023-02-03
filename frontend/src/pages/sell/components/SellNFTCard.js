@@ -1,6 +1,6 @@
 import { TextInput } from "flowbite-react"
 import useWasm from "../../../hooks/useWasm"
-import useYoroi from "../../../hooks/useYoroi"
+import useNami from "../../../hooks/useNami"
 import { useState, useEffect } from "react";
 import { Buffer } from "buffer";
 import { useToast } from "../../../hooks/useToast";
@@ -19,7 +19,7 @@ const NFTCard = ({ metadata }) => {
         const policyId = Object.keys(metadata)[0]
         const currentTokenName = Object.keys(metadata[policyId])[0]
         let currentURL = metadata[policyId][currentTokenName].image
-        if (currentURL.startsWith("ipfs://")) {
+        if (currentURL?.startsWith("ipfs://")) {
             currentURL = "https://ipfs.io/ipfs/" + currentURL.slice(7)
         }
         setTokenPolicyId(policyId)
@@ -28,7 +28,7 @@ const NFTCard = ({ metadata }) => {
         setImageURL(currentURL)
     }, [metadata])
 
-    const { api } = useYoroi()
+    const { api } = useNami()
     const wasm = useWasm()
 
     const sellToken = async () => {

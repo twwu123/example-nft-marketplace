@@ -1,12 +1,12 @@
 import { Spinner } from "flowbite-react"
 import useWasm from "../../../hooks/useWasm"
-import useYoroi from "../../../hooks/useYoroi"
+import useNami from "../../../hooks/useNami"
 import axios from "axios";
 import { useState, useEffect } from "react";
 import NFTCard from "./SellNFTCard";
 
 const NFTList = () => {
-    const { api } = useYoroi()
+    const { api } = useNami()
     const wasm = useWasm()
     const yoroiBackendUrl = "https://testnet-backend.yoroiwallet.com/api"
 

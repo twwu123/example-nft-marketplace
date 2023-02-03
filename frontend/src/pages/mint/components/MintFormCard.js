@@ -3,8 +3,9 @@ import axios from "axios";
 import { Card, Label, TextInput, Button, Spinner } from "flowbite-react"
 import { Buffer } from "buffer";
 import useWasm from "../../../hooks/useWasm"
-import useYoroi from "../../../hooks/useYoroi"
+import useNami from "../../../hooks/useNami"
 import { useToast } from "../../../hooks/useToast";
+import { hexToBytes, mergeSignatures } from "../../../utils/utils";
 
 const MintFormCard = () => {
 	const [tokenName, setTokenName] = useState("")
@@ -12,7 +13,7 @@ const MintFormCard = () => {
 	const [tokenDescription, setTokenDescription] = useState("")
 	const [loading, setLoading] = useState(false)
 
-	const { api } = useYoroi()
+	const { api } = useNami()
 	const wasm = useWasm()
 	const toast = useToast(4000);
 	const yoroiBackendUrl = "https://testnet-backend.yoroiwallet.com/api"
@@ -61,7 +62,7 @@ const MintFormCard = () => {
 				"native_scripts": [
 					{
 						"TimelockExpiry": {
-							"slot": currentSlot + 1000
+							"slot": (currentSlot + 1000).toString()
 						}
 					},
 					{
@@ -110,24 +111,34 @@ const MintFormCard = () => {
 		const wasmTransaction = txBuilder.build_tx()
 
 		setLoading(false)
-		api?.signTx(wasmTransaction.to_hex())
-			.then((hexWitnessSet) => {
-				const wasmWitnessSet = wasm.TransactionWitnessSet.from_hex(hexWitnessSet)
-				const wasmSignedTransaction = wasm.Transaction.new(wasmTransaction.body(), wasmWitnessSet, wasmTransaction.auxiliary_data())
-				api?.submitTx(wasmSignedTransaction.to_hex())
-					.then((txId) => {
-						toast('success', "Tx successfully submitted")
-						console.log("Tx successfully submitted ", txId)
-					})
-					.catch((e) => {
-						toast('error', 'Transaction was rejected');
-						console.log(e)
-					})
-			})
-			.catch((e) => {
-				toast('error', e.info);
-				console.log(e)
-			})
+		const deserializedTx = wasm.Transaction.from_bytes(wasmTransaction.to_bytes())
+		const txWitnessSet = deserializedTx.witness_set();
+
+		window.cardano.signTx(wasmTransaction.to_hex(), true).then((newWitnessSet) => {
+			const newSignatures = wasm.TransactionWitnessSet.from_bytes(hexToBytes(newWitnessSet)).vkeys() ?? wasm.Vkeywitnesses.new();
+
+			const txSignatures = mergeSignatures(wasm, txWitnessSet, newSignatures)
+			txWitnessSet.set_vkeys(txSignatures);
+
+			const signedTx = Buffer.from(wasm.Transaction.new(
+				deserializedTx.body(),
+				txWitnessSet,
+				deserializedTx.auxiliary_data()
+			).to_bytes()).toString('hex');
+
+			window.cardano.submitTx(signedTx)
+				.then((txId) => {
+					toast('success', "Tx successfully submitted")
+					console.log("Tx successfully submitted ", txId)
+				})
+				.catch((e) => {
+					toast('error', 'Transaction was rejected');
+					console.log(e)
+				});
+		}).catch((e) => {
+			toast('error', e.info);
+			console.log(e)
+		});
 	}
 
 	return (
@@ -185,7 +196,7 @@ const MintFormCard = () => {
 					</Button>
 				</form>
 			</Card>
-			{ loading && 
+			{loading &&
 				<div className="float-right pt-5">
 					<Spinner />
 				</div>
